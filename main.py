@@ -5,12 +5,16 @@ import schedule
 import requests
 import os
 
+def convert_avi_to_mp4(avi_file_path, output_name):
+    os.popen(
+        "ffmpeg -i '{input}' -ac 2 -b:v 2000k -c:a aac -c:v libx264 -b:a 160k -vprofile high -bf 0 -strict experimental -f mp4 '{output}.mp4'".format(
+            input=avi_file_path, output=output_name))
 
 class UpdateFilesNotification(cmd.Cmd):
     def __init__(self):
         super(UpdateFilesNotification, self).__init__()
-        self.folder = "D:\\"
-        self.minutes = 1
+        self.folder = '/working_dir'
+        self.seconds = 1
         if not os.path.exists('logs.txt'):
             open('logs.txt', 'w').close()
 
@@ -23,13 +27,14 @@ class UpdateFilesNotification(cmd.Cmd):
 
     def do_set_time_interval(self, line):
         if not line:
-            line = self.minutes
+            line = self.seconds
         else:
-            self.minutes = line
-        print("running script every - ", self.minutes, "minutes")
+            self.seconds = line
+        print("running script every - ", self.seconds, "seconds")
 
     def do_show_settings(self, line):
-        print("Settings:\nFolder:", self.folder, "\nStart every:", self.minutes, 'minutes')
+        print("Settings:\nFolder:", self.folder, "\nStart every:", self.seconds, 'seconds')
+
 
     def run(self):
         onlyfiles = [f for f in listdir(self.folder) if isfile(join(self.folder, f))]
@@ -41,31 +46,27 @@ class UpdateFilesNotification(cmd.Cmd):
                     file1.writelines(file)
                     file1.close()
                     print("file --", file)
-                    self.sendToTelegram(file)
+                    if file.endswith('.avi'):
+                        self.sendToTelegram(file)
 
     def sendToTelegram(self, file_name):
         print('file_name', file_name)
-        config = self.telegramConfig(1)
-        file = self.folder + "\\" + file_name
-        message = ('https://api.telegram.org/' + config.get('bot_token').strip() + '/sendPhoto?chat_id=' + config.get(
-            'chat_id').strip())
+        bot_token='bot'+ os.environ['bot_token']
+        chat_id=os.environ['chat_id']
+        file = self.folder + "/" + file_name
+        convert_avi_to_mp4(file, file)
+        video = file + '.mp4'
+        message = ('https://api.telegram.org/' + bot_token + '/sendDocument?chat_id=' + chat_id)
         send = requests.post(message, files={
-            'photo': open(file, 'rb')
+            'document': open(video, 'rb')
         })
         print(send.status_code, send.reason, send.content)
+        os.remove(file +'.mp4')
 
     def do_job(self, line):
-        schedule.every(self.minutes).minutes.do(self.run)
+        schedule.every(self.seconds).seconds.do(self.run)
         while True:
             schedule.run_pending()
-
-    def telegramConfig(self, line):
-        telegramConfig = dict()
-        file = open('.env', 'r')
-        data = file.readlines()
-        telegramConfig['bot_token'] = data[0]
-        telegramConfig['chat_id'] = data[1]
-        return telegramConfig
 
 
 if __name__ == '__main__':

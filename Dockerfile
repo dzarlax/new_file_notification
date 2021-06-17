@@ -1,7 +1,7 @@
 FROM python:3.8
 
 ADD main.py requirements.txt /
-VOLUME /working_directory
+VOLUME /working_dir
 
 RUN apt-get -y update
 RUN apt-get -y upgrade

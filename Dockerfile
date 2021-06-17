@@ -11,4 +11,3 @@ RUN pip install -r /requirements.txt
 
 ENTRYPOINT ["/usr/bin/env"]
 CMD ["python3", "/main.py"]
-CMD ["job"]

@@ -43,7 +43,7 @@ def main():
 folder = '/working_dir'
 bot_token='bot'+ os.environ['bot_token']
 chat_id=os.environ['chat_id']
-seconds = os.environ['interval']
+seconds = int(os.environ['interval'])
 
 schedule.every(seconds).seconds.do(main)
 

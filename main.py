@@ -40,7 +40,7 @@ def main():
                     sendToTelegram(file)
 
 
-folder = '/Users/alexpanfilov/Documents/test'
+folder = '/working_dir'
 bot_token='bot'+ os.environ['bot_token']
 chat_id=os.environ['chat_id']
 seconds = os.environ['interval']

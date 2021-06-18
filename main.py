@@ -36,7 +36,7 @@ def main():
                 file1.writelines(file)
                 file1.close()
                 print("file --", file)
-                if file.endswith('.avi'):
+                if file.endswith('.mkv') or file.endswith('.avi'):
                     sendToTelegram(file)
 
 

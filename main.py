@@ -8,7 +8,7 @@ import time
 def convert_avi_to_mp4(avi_file_path, output_name):
     print('converting')
     os.system(
-        "ffmpeg -i '{input}' '{output}.mp4'".format(
+        "ffmpeg -i '{input}' '{output}'.mp4".format(
             input=avi_file_path, output=output_name))
     return True
 
